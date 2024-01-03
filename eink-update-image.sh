@@ -43,6 +43,7 @@ network_default_gateway()
 
 wifi_enable()
 {
+	# list all inter-process communication system flags: lipc-probe -a
 	lipc-set-prop com.lab126.cmd wirelessEnable 1
 	while ! wifi_isready; do sleep 1; done
 }
@@ -130,12 +131,17 @@ screensaver_disable()
 	lipc-set-prop com.lab126.powerd preventScreenSaver 1
 }
 
-toolbar_disable
+# toolbar_disable
 screensaver_disable
 
 while true; do {
 	wifi_isready || wifi_enable
-	download_image && display_imagefile "$DST"
+
+	HASH_OLD="$( test -f "$DST" && md5sum "$DST" )"
+	download_image && {
+		HASH_NEW="$( md5sum "$DST" )"
+		test "$HASH_OLD" = "$HASH_NEW" || display_imagefile "$DST"
+	}
 
 	if power_connected; then
 		sleep "$INTERVAL"

@@ -24,10 +24,16 @@ URL="http://intercity-vpn.de/files/2024-01-03/upload/eink.png"
 DST="/var/image.png"	# should be on a RAM-disk / tmpfs
 INTERVAL=900		# in [seconds]
 
+fixup_dns()
+{
+	test -s /etc/resolv.conf || echo "nameserver 8.8.8.8" >/etc/resolv.conf
+}
+
 REMEMBER_DEFGW="$( ip route list exact 0.0.0.0/0 )"
 [ -z "$REMEMBER_DEFGW" ] && REMEMBER_DEFGW='default via 100.64.0.1 dev wlan0' && {
 	# shellcheck disable=SC2086
 	ip route add $REMEMBER_DEFGW
+	fixup_dns
 }
 
 network_default_gateway()
@@ -56,6 +62,7 @@ wifi_isready()
 			sleep 15
 			# shellcheck disable=SC2086
 			network_default_gateway || ip route add $REMEMBER_DEFGW		# fallback to old
+			fixup_dns
 		}
 	}
 }

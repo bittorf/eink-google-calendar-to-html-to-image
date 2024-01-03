@@ -25,7 +25,10 @@ DST="/var/image.png"	# should be on a RAM-disk / tmpfs
 INTERVAL=900		# in [seconds]
 
 REMEMBER_DEFGW="$( ip route list exact 0.0.0.0/0 )"
-[ -z "$REMEMBER_DEFGW" ] && REMEMBER_DEFGW='default via 100.64.0.1 dev wlan0'
+[ -z "$REMEMBER_DEFGW" ] && REMEMBER_DEFGW='default via 100.64.0.1 dev wlan0' && {
+	# shellcheck disable=SC2086
+	ip route add $REMEMBER_DEFGW
+}
 
 network_default_gateway()
 {
@@ -94,12 +97,20 @@ download_image()
 	wget -O "$DST" "${URL}#${percent}"	# for debugging we send the powerstate during
 }
 
+toolbar_disable()
+{
+	/etc/init.d/framework stop
+	# lipc-set-prop com.lab126.pillow disableEnablePillow disable
+}
+
 screensaver_disable()
 {
 	lipc-set-prop com.lab126.powerd preventScreenSaver 1
 }
 
+toolbar_disable
 screensaver_disable
+
 while true; do {
 	wifi_isready || wifi_enable
 	download_image && display_imagefile "$DST"

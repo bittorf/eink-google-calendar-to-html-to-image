@@ -35,6 +35,8 @@
 * https://github.com/dpavlin/k3libre
 * https://github.com/dpavlin/k3libre/blob/master/kindle-display.sh
 * https://shop.invisible-computers.com/
+* https://github.com/schuhumi/alpine_kindle
+* https://github.com/koreader/koreader/blob/master/platform/kindle/koreader.sh
 
 ### power drain
 * with WiFi on and no sleep ~1% in 30min => 100% in 2 days + 4 hours

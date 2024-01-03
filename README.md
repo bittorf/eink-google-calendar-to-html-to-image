@@ -2,13 +2,19 @@
 * Linux eInk 6"/15.2cm display Amazon Kindle 4th generation model D01100 ~30€ on ebay @2023
 * switch on SSH access: https://wiki.mobileread.com/wiki/Kindle4NTHacking#Jailbreak
 
-### step1: cronjob on headless a webserver
+## setup
+
+### step1: cronjob on your (headless) webserver
 * fetch your google calendar using [gcalcli](https://github.com/insanum/gcalcli)
 * build a HTML page with your next appointments using [phantomjs](https://phantomjs.org)
 * convert HTML to grayscale image using [imagemagick](https://imagemagick.org)
 
 ### step2: cronjob on eInk
 * download image from your webserver and refresh screen
+* install a cronjob:
+```
+/bin/eink-update-image.sh install
+```
 
 ### similar projects:
 * https://www.stavros.io/posts/making-the-timeframe/
@@ -23,7 +29,12 @@
 * https://wiki.postmarketos.org/wiki/Amazon_Kindle_4_(amazon-yoshi)
 * https://wiki.mobileread.com/wiki/Kindle_Screen_Saver_Hack_for_all_2.x,_3.x_%26_4.x_Kindles
 * https://wiki.mobileread.com/wiki/Kindle4NTHacking#Jailbreak
+* https://wiki.mobileread.com/wiki/Lipc
 * https://www.mobileread.com/forums/showthread.php?t=88004
+* https://www.mobileread.com/forums/showthread.php?t=221497
+* https://github.com/dpavlin/k3libre
+* https://github.com/dpavlin/k3libre/blob/master/kindle-display.sh
+* https://shop.invisible-computers.com/
 
 ### power drain
 * with WiFi on and no sleep ~1% in 30min => 100% in 2 days + 4 hours

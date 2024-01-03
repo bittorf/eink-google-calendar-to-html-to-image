@@ -65,9 +65,24 @@ sleep_for()
 	lipc-set-prop -i com.lab126.powerd rtcWakeup "$1"
 }
 
-suspend_ready()
+wait_for_suspend_ready()
 {
-	while true; do powerd_test -s | grep -q Ready || sleep 1; done
+	while true; do {
+		powerd_test -s | grep -q Ready && return 0
+		sleep 1
+	} done
+
+	# Powerd state: Active
+	# Remaining time in this state: 356.085518
+	# defer_suspend:0
+	# suspend_grace:0
+	# prevent_screen_saver:0
+	# drive_mode:unknown
+	# Battery Level: 96%
+	# Last batt event at: 96%
+	# Charging: No
+	# batt_full=0
+	# Battery logging: On
 }
 
 battery_percent()
@@ -119,7 +134,7 @@ while true; do {
 		sleep "$INTERVAL"
 	else
 		wifi_disable
-		suspend_ready
+		wait_for_suspend_ready
 		sleep_for "$INTERVAL" sec
 	fi
 } done

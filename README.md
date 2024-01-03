@@ -37,6 +37,7 @@
 * https://shop.invisible-computers.com/
 * https://github.com/schuhumi/alpine_kindle
 * https://github.com/koreader/koreader/blob/master/platform/kindle/koreader.sh
+* https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
 
 ### power drain
 * with WiFi on and no sleep ~1% in 30min => 100% in 2 days + 4 hours

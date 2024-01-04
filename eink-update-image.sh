@@ -10,7 +10,7 @@ case "$1" in
 		else
 			grep "/dev/root / " /proc/mounts | grep -q 'ro,' && mntroot rw
 			chmod +x "$0"
-			printf '\n%s\n' "* * * * * $0 cronjob" >>"$CRONTAB"
+			printf '\n%s\n' "* * * * * $0 cronjob" >>"$CRONTAB" && mntroot ro
 			echo "[OK] cronjob installed"
 		fi
 
@@ -75,9 +75,10 @@ sleep_for()
 
 wait_for_suspend_ready()
 {
-	while true; do {
+	local i=0
+	while test $i -lt 60; do {
 		powerd_test -s | grep -q Ready && return 0
-		sleep 1
+		sleep 1 && i=$(( i + 1 ))
 	} done
 
 	# Powerd state: Active

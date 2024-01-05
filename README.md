@@ -4,7 +4,7 @@
 
 ## setup
 
-![Amazon Kindle 4th generation](https://github.com/bittorf/eink-google-calendar-to-html-to-image/blob/main/eink-calendar.png?raw=true)
+![Amazon Kindle 4th generation](https://github.com/bittorf/eink-google-calendar-to-html-to-image/blob/main/eink-calendar-example.jpg?raw=true)
 
 ### step1: cronjob on your (headless) webserver
 * fetch your google calendar using [gcalcli](https://github.com/insanum/gcalcli)

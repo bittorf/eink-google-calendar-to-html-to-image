@@ -148,11 +148,18 @@ while true; do {
 	HASH_OLD="$( test -f "$DST" && md5sum "$DST" )"
 	download_image && {
 		HASH_NEW="$( md5sum "$DST" )"
-		test "$HASH_OLD" = "$HASH_NEW" || {
-			display_imagefile "$DST" || {
-				rm -f "$DST" && continue
+		if test "$HASH_OLD" = "$HASH_NEW"; then
+			FBHASH_NEW="$( md5sum /dev/fb0 )"
+			test "$FBHASH_NEW" = "$FBHASH_OLD" || {
+				display_imagefile "$DST" && FBHASH_OLD="$( md5sum /dev/fb0 )"
 			}
-		}
+		else
+			if display_imagefile "$DST"; then
+				FBHASH_OLD="$( md5sum /dev/fb0 )"
+			else
+				rm -f "$DST" && continue
+			fi
+		fi
 	}
 
 	if power_connected; then

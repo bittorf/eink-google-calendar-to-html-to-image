@@ -150,7 +150,7 @@ while true; do {
 		HASH_NEW="$( md5sum "$DST" )"
 		if test "$HASH_OLD" = "$HASH_NEW"; then
 			FBHASH_NEW="$( md5sum /dev/fb0 )"
-			test "$FBHASH_NEW" = "$FBHASH_OLD" || {
+			test "$FBHASH_NEW" = "${FBHASH_OLD:-$FBHASH_NEW}" || {
 				display_imagefile "$DST" && FBHASH_OLD="$( md5sum /dev/fb0 )"
 			}
 		else

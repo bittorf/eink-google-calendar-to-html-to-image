@@ -4,10 +4,13 @@
 
 ## setup
 
+![Amazon Kindle 4th generation](https://github.com/bittorf/eink-google-calendar-to-html-to-image/blob/main/eink-calendar.png?raw=true)
+
 ### step1: cronjob on your (headless) webserver
 * fetch your google calendar using [gcalcli](https://github.com/insanum/gcalcli)
-* build a HTML page with your next appointments using [phantomjs](https://phantomjs.org)
-* convert HTML to grayscale image using [imagemagick](https://imagemagick.org)
+* build HTML page with your next appointments using ```gcal-to-image.sh```
+* convert HTML to an image using [phantomjs](https://phantomjs.org)
+* rotate and convert to grayscale image using [imagemagick](https://imagemagick.org)
 
 ### step2: cronjob on eInk
 * download image from your webserver and refresh screen

@@ -22,7 +22,7 @@ case "$1" in
 	*) echo "Usage: $0 <install|cronjob|help>" && exit 1
 esac
 
-URL="http://intercity-vpn.de/files/2024-01-03/upload/eink.png"
+URL='http://10.63.44.33/eink-image.png'
 DST="/var/image.png"	# should be on a RAM-disk / tmpfs
 INTERVAL=900		# in [seconds]
 

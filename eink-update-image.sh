@@ -29,13 +29,6 @@ fixup_dns()
 	test -s /etc/resolv.conf || echo "nameserver 8.8.8.8" >/etc/resolv.conf
 }
 
-REMEMBER_DEFGW="$( ip route list exact 0.0.0.0/0 )"
-[ -z "$REMEMBER_DEFGW" ] && REMEMBER_DEFGW='default via 100.64.0.1 dev wlan0' && {
-	# shellcheck disable=SC2086
-	ip route add $REMEMBER_DEFGW
-	fixup_dns
-}
-
 network_default_gateway()
 {
 	ip route list exact 0.0.0.0/0 | grep -q .
@@ -45,7 +38,9 @@ wifi_enable()
 {
 	# list all inter-process communication system flags: lipc-probe -a
 	lipc-set-prop com.lab126.cmd wirelessEnable 1
-	while ! wifi_isready; do sleep 1; done
+
+	local i=0
+	while ! wifi_isready; do sleep 1; i=$(( i + 1 )); test $i -gt 60 && return 1; done
 }
 
 wifi_disable()
@@ -134,6 +129,13 @@ screensaver_disable()
 
 # toolbar_disable
 screensaver_disable
+
+REMEMBER_DEFGW="$( ip route list exact 0.0.0.0/0 )"
+[ -z "$REMEMBER_DEFGW" ] && REMEMBER_DEFGW='default via 100.64.0.1' && {
+	# shellcheck disable=SC2086
+	ip route add $REMEMBER_DEFGW
+	fixup_dns
+}
 
 while true; do {
 	wifi_isready || wifi_enable

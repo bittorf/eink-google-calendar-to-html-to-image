@@ -16,7 +16,7 @@ case "$1" in
 
 		exit 0
 	;;
-	cronjob) mkdir /var/eink-lock 2>/dev/null || exit 0 ;;
+	cronjob) mkdir /var/eink-lock 2>/dev/null || exit 0 ;;		# TODO: uptime >3min?
 	*) echo "Usage: $0 <install|cronjob|help>" && exit 1
 esac
 

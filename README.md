@@ -50,3 +50,13 @@ Wed Jan  3 10:19:40 UTC 2024 => 58%
 ```
 
 * without WiFi and sleep active, only short power on each 15min
+
+### charging
+* needs around 76 sec for each percent (~90min from 20% to 80%)
+```
+[root@kindle root]# while :;do echo "$(date) => $( gasgauge-info -s)"; sleep 60; done
+Fri Jan  5 09:00:08 UTC 2024|4%
+...
+Fri Jan  5 10:44:16 UTC 2024|86%
+```
+

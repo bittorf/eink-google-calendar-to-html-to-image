@@ -10,13 +10,15 @@ case "$1" in
 		else
 			grep "/dev/root / " /proc/mounts | grep -q 'ro,' && mntroot rw
 			chmod +x "$0"
-			printf '\n%s\n' "* * * * * $0 cronjob" >>"$CRONTAB" && mntroot ro
+			printf '\n%s\n' "* * * * * $0 cronjob >/dev/null" >>"$CRONTAB" && mntroot ro
 			echo "[OK] cronjob installed"
 		fi
 
 		exit 0
 	;;
-	cronjob) mkdir /var/eink-lock 2>/dev/null || exit 0 ;;		# TODO: uptime >3min?
+	cronjob)
+		mkdir /var/eink-lock 2>/dev/null || exit 0
+	;;
 	*) echo "Usage: $0 <install|cronjob|help>" && exit 1
 esac
 
@@ -113,7 +115,7 @@ download_image()
 {
 	percent="$( battery_percent )"
 	rm -f "$DST"
-	wget -O "$DST" "${URL}#${percent}"	# for debugging we send the powerstate during
+	wget -qO "$DST" "${URL}#${percent}"	# for debugging we send the powerstate during
 }
 
 toolbar_disable()
@@ -126,6 +128,9 @@ screensaver_disable()
 {
 	lipc-set-prop com.lab126.powerd preventScreenSaver 1
 }
+
+export DISPLAY=:0.0
+sleep 300		# give framework time after bootup
 
 # toolbar_disable
 screensaver_disable

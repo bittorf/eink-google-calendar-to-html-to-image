@@ -143,7 +143,11 @@ while true; do {
 	HASH_OLD="$( test -f "$DST" && md5sum "$DST" )"
 	download_image && {
 		HASH_NEW="$( md5sum "$DST" )"
-		test "$HASH_OLD" = "$HASH_NEW" || display_imagefile "$DST"
+		test "$HASH_OLD" = "$HASH_NEW" || {
+			display_imagefile "$DST" || {
+				rm -f "$DST" && continue
+			}
+		}
 	}
 
 	if power_connected; then

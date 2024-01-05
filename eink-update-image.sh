@@ -132,7 +132,7 @@ screensaver_disable()
 export DISPLAY=:0.0
 sleep 300		# give framework time after bootup
 
-# toolbar_disable
+toolbar_disable
 screensaver_disable
 
 REMEMBER_DEFGW="$( ip route list exact 0.0.0.0/0 )"

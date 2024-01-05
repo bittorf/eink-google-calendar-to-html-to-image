@@ -40,6 +40,7 @@
 * https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
 
 ### power drain
+* Amazon MC-265360 - Li-Polymer 750mAh @3.7 Volt = 2.78 Wh
 * with WiFi on and no sleep ~1% in 30min => 100% in 2 days + 4 hours
 
 ```

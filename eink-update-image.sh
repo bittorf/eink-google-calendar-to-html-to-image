@@ -151,6 +151,6 @@ while true; do {
 	else
 		wifi_disable
 		wait_for_suspend_ready
-		sleep_for "$INTERVAL" sec
+		sleep_for "$INTERVAL" sec || sleep "$INTERVAL"
 	fi
 } done

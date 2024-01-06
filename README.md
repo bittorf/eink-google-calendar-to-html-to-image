@@ -11,6 +11,10 @@
 * build HTML page with your next appointments using ```gcal-to-image.sh```
 * convert HTML to an image using [phantomjs](https://phantomjs.org)
 * rotate and convert to grayscale image using [imagemagick](https://imagemagick.org)
+```
+user@box:~$ crontab -l | grep gcal-to-image
+*/15 * * * * ~/gcal-to-image.sh >/dev/null
+```
 
 ### step2: cronjob on eInk
 * download image from your webserver and refresh screen

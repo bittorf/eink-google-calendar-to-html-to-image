@@ -41,7 +41,14 @@ query | tr -d '\r' >"$GCAL_PLAINTTEXT"
 emit_html()
 {
 echo "<!DOCTYPE html><html lang=en><head><title>gcalcli-html-export</title>"
-echo "<meta charset='UTF-8'></head><body bgcolor=white>"
+echo "<meta charset='UTF-8'>"
+echo "<style>"
+echo ".table th {"
+echo "  background-color: #fff;"
+echo "  font-size: 6pt;"
+echo "}"
+echo "</style>"
+echo "</head><body bgcolor=white>"
 echo "<table cellspacing=1 cellpadding=1 width=100% border=1 height=100%>"
 echo " <tr>"
 echo "  <th align=center width=1%>Day</th>"
@@ -136,5 +143,4 @@ IMAGE="$( html_screenshot "file://$TEMPFILE.html" plan.png )" && \
 convert "$IMAGE" -type GrayScale -depth 8 -colors 256 -resize '800x600!' -rotate 90 "$TEMPFILE.png"
 scp -O "$TEMPFILE.png" "$WEBSERVER_UPLOAD"
 
-cp "$TEMPFILE.html" /tmp/1.html
 rm -f "$TEMPFILE" "$TEMPFILE.html" "$TEMPFILE.png" "$IMAGE" "$GCAL_PLAINTTEXT" "$TEMP"

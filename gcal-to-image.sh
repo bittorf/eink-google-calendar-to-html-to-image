@@ -5,6 +5,11 @@
 WEBSERVER_UPLOAD='root@10.63.44.33:/www/eink-image.png'
 MAX_LINES=10
 
+command -v 'faketime' >/dev/null || {
+	echo "[ERROR] please install 'faketime'"
+	exit 1
+}
+
 command -v 'phantomjs' >/dev/null || {
 	URL="https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
 
@@ -23,9 +28,9 @@ EOF
 	exit 1
 }
 
-query()
+query()		# show even todays appointments using faketime:
 {
-  gcalcli --nocolor agenda "$( date )" --military --nostarted
+  faketime -f '-1d' gcalcli --nocolor agenda "$( LC_ALL=C date )" --military --nostarted
 }
 
 NBS='&nbsp;'
@@ -50,8 +55,10 @@ J=0
 while IFS= read -r LINE; do {
   I=$(( I + 1 ))
 
+echo "$LINE" >>/tmp/2
+
   case "$LINE" in
-    '')
+    ''|*'Kalenderwoche'*20[0-9][0-9]|*Feiertag*)
       I=$(( I - 1 ))
     ;;
     "Fri "*|"Sat "*|"Sun "*|"Thu "*|"Tue "*|"Wed "*|"Mon "*)
@@ -60,8 +67,11 @@ while IFS= read -r LINE; do {
 
       # shellcheck disable=SC2086
       MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
+      # shellcheck disable=SC2086
       TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
       DAY="$(     echo "$LINE" | cut -b1-10 )"
+
+      test "$( LC_ALL=C date '+%a %b %d' )" = "$DAY" && DAY="<b>$DAY</b>"
 
       echo " <tr><!-- startofentry $J | line: $I | $CUTPATTERN -->"
       echo "  <td nowrap><tt>$DAY</tt></td>"
@@ -72,6 +82,7 @@ while IFS= read -r LINE; do {
     *)
       # shellcheck disable=SC2086
       MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
+      # shellcheck disable=SC2086
       TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
       DAY="$NBS"
 

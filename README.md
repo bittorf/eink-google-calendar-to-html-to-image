@@ -46,6 +46,12 @@ user@box:~$ crontab -l | grep gcal-to-image
 * https://github.com/koreader/koreader/blob/master/platform/kindle/koreader.sh
 * https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
 
+### ToDo
+* make HTML w3c validator safe (CSS)
+* document special stuff (e.g. upload IP)
+* make sleepmode and RTC-wakeup working: https://www.mobileread.com/forums/showthread.php?p=4246644
+* measure power drain in sleepmode
+
 ### power drain
 * Amazon MC-265360 - Li-Polymer 750mAh @3.7 Volt = 2.78 Wh
 * with WiFi on and no sleep ~1% in 30min => 100% in 2 days + 4 hours

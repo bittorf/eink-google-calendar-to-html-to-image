@@ -115,7 +115,7 @@ download_image()
 {
 	percent="$( battery_percent )"
 	rm -f "$DST"
-	wget -qO "$DST" "${URL}#${percent}"	# for debugging we send the powerstate during
+	wget -qO "$DST" "${URL}?power=${percent}"	# for debugging we send the powerstate during
 }
 
 toolbar_disable()

@@ -49,10 +49,11 @@ user@box:~$ crontab -l | grep gcal-to-image
 * https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
 
 ### ToDo
-* make HTML w3c validator safe (CSS)
-* document special stuff (e.g. upload IP)
+* make HTML more w3c validator safe (CSS)
+* document special stuff (e.g. upload scp-command, download URL
 * make sleepmode and RTC-wakeup working: https://www.mobileread.com/forums/showthread.php?p=4246644
 * measure power drain in sleepmode
+* calc estimated time till 20% power (start loading then) or just charge monthly?
 
 ### power drain
 * Amazon MC-265360 - Li-Polymer 750mAh @3.7 Volt = 2.78 Wh

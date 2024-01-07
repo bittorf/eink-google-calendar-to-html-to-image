@@ -55,6 +55,7 @@ user@box:~$ crontab -l | grep gcal-to-image
 * make sleepmode and RTC-wakeup working: https://www.mobileread.com/forums/showthread.php?p=4246644
 * measure power drain in sleepmode
 * calc estimated time till 20% power (start loading then) or just charge monthly?
+* try on kindle DX with 9.7"
 
 ### power drain
 * Amazon MC-265360 - Li-Polymer 750mAh @3.7 Volt = 2.78 Wh

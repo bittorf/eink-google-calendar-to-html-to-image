@@ -4,7 +4,12 @@
 # e.g.: ssh-copy-id root@10.63.44.33
 WEBSERVER_UPLOAD='root@10.63.44.33:/www/eink-image.png'
 MAX_LINES=10
-set -x
+
+query()		# show even todays appointments using faketime:
+{
+  timeout 15 faketime -f '-1d' gcalcli --nocolor agenda "$( LC_ALL=C date )" --military --nostarted
+}
+
 command -v 'faketime' >/dev/null || {
 	echo "[ERROR] please install 'faketime'"
 	exit 1
@@ -28,15 +33,10 @@ EOF
 	exit 1
 }
 
-query()		# show even todays appointments using faketime:
-{
-  faketime -f '-1d' gcalcli --nocolor agenda "$( LC_ALL=C date )" --military --nostarted
-}
-
 NBS='&nbsp;'
 TEMP="$( mktemp )" || exit 1
 GCAL_PLAINTTEXT="$( mktemp )" || exit 1
-query | tr -d '\r' >"$GCAL_PLAINTTEXT"	# FIXME: can be stuck at: "Enter verification code: ..."
+query | tr -d '\r' >"$GCAL_PLAINTTEXT"		# FIXME: can be stuck at: "Enter verification code: ..."
 
 emit_html()
 {

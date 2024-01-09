@@ -36,7 +36,13 @@ EOF
 NBS='&nbsp;'
 TEMP="$( mktemp )" || exit 1
 GCAL_PLAINTTEXT="$( mktemp )" || exit 1
-query | tr -d '\r' >"$GCAL_PLAINTTEXT"		# FIXME: can be stuck at: "Enter verification code: ..."
+
+if query >"$TEMP"; then
+  tr -d '\r' <"$TEMP" >"$GCAL_PLAINTTEXT"
+else
+  rm -f "$TEMP"
+  exit 1
+fi
 
 emit_html()
 {

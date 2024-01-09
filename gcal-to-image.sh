@@ -35,14 +35,162 @@ EOF
 
 NBS='&nbsp;'
 TEMP="$( mktemp )" || exit 1
-GCAL_PLAINTTEXT="$( mktemp )" || exit 1
+GCAL_PLAINTEXT="$( mktemp )" || exit 1
+GCAL_PLAINTEXT_OLD=/tmp/.cache_gcalcli
 
 if query >"$TEMP"; then
-  tr -d '\r' <"$TEMP" >"$GCAL_PLAINTTEXT"
+  tr -d '\r' <"$TEMP" >"$GCAL_PLAINTEXT"
+  cp "$GCAL_PLAINTEXT" "$GCAL_PLAINTEXT_OLD"
+  ERROR=
 else
-  rm -f "$TEMP"
-  exit 1
+  RC=$?
+  cp "$GCAL_PLAINTEXT_OLD" "$GCAL_PLAINTEXT"
+
+  if grep -q "Enter verification code:" "$TEMP"; then
+    ERROR='ERROR: gcalcli needs re-auth!'
+  else
+    ERROR="ERROR: gcalcli RC:$RC"		# TODO: "Low battery 8%"?
+  fi
 fi
+
+ribbon_css()
+{
+	cat <<EOF
+/*!
+ * "Fork me on chaos.expert" CSS ribbon v0.0.1 | MIT License
+ * https://chaos.expert/chaos-expert/fork-ribbon
+*/
+
+.chaos-expert-fork-ribbon {
+  width: 12.1em;
+  height: 12.1em;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 11.5px;
+  text-decoration: none;
+  text-indent: -999999px;
+  text-align: center;
+}
+
+.chaos-expert-fork-ribbon.fixed {
+  position: fixed;
+}
+
+.chaos-expert-fork-ribbon:before, .chaos-expert-fork-ribbon:after {
+  /* The right and left classes determine the side we attach our banner to */
+  position: absolute;
+  display: block;
+  width: 16.78em;
+  height: 1.54em;
+  
+  top: 3.73em;
+  right: -3.73em;
+  
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.chaos-expert-fork-ribbon:before {
+  content: "";
+
+  /* Add a bit of padding to give some substance outside the "stitching" */
+  padding: .38em 0;
+
+  /* Set the base colour */
+  background-color: #e802c9;
+
+  /* Set a gradient: transparent black at the top to almost-transparent black at the bottom */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.15)));
+  background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+  background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+  background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+
+  /* Add a drop shadow */
+  -webkit-box-shadow: 0 .15em .23em 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 .15em .23em 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 .15em .23em 0 rgba(0, 0, 0, 0.5);
+
+  pointer-events: auto;
+}
+
+.chaos-expert-fork-ribbon:after {
+  /* Set the text from the title attribute */
+  content: attr(title);
+
+  /* Set the text properties */
+  color: #fff;
+  font: 700 1em "Ubuntu", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.54em;
+  text-decoration: none;
+  /*text-shadow: 0 -.08em rgba(0, 0, 0, 0.5);*/
+  text-align: center;
+  text-indent: 0;
+
+  /* Set the layout properties */
+  padding: .15em 0;
+  margin: .15em 0;
+
+  /* Add "stitching" effect */
+  border-width: .08em 0;
+  border-style: dashed;
+  border-color: #fff;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.chaos-expert-fork-ribbon.red:before{
+  background-color: #990000;
+}
+
+.chaos-expert-fork-ribbon.green:before{
+  background-color: #009900;
+}
+
+.chaos-expert-fork-ribbon.blue:before{
+  background-color: #000099;
+}
+
+.chaos-expert-fork-ribbon.yellow:before {
+  background-color: #ffb60b;
+}
+
+.chaos-expert-fork-ribbon.silver:before{
+  background-color: #b4b4b4;
+}
+
+.chaos-expert-fork-ribbon.grey:before{
+  background-color: #959bb5;
+}
+
+.chaos-expert-fork-ribbon.orange:before{
+  background-color: #ff6e40;
+}
+
+.chaos-expert-fork-ribbon.white:before{
+  -webkit-box-shadow: 0 .15em .23em 0 rgba(255, 255, 255, 0.5);
+  -moz-box-shadow: 0 .15em .23em 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 .15em .23em 0 rgba(255, 255, 255, 0.5);
+  background-color: #fff;
+}
+
+.chaos-expert-fork-ribbon.white:after{
+  color: #000;
+  border-color: #333;
+}
+EOF
+}
 
 emit_html()
 {
@@ -53,8 +201,14 @@ emit_html()
   echo "  background-color: #fff;"
   echo "  font-size: 6pt;"
   echo "}"
+
+  [ -n "$ERROR" ] && ribbon_css
+
   echo "</style>"
   echo "</head><body bgcolor=white>"
+
+  [ -n "$ERROR" ] && echo "<a class='chaos-expert-fork-ribbon' href='#' title='$ERROR'>$ERROR</a>"
+
   echo "<table cellspacing=1 cellpadding=1 width=100% border=1 height=100%>"
   echo " <tr>"
   echo "  <th align=center width=1%>Day</th>"
@@ -104,7 +258,7 @@ emit_html()
         echo " </tr>"
       ;;
     esac
-  } done <"$GCAL_PLAINTTEXT" >"$TEMP"
+  } done <"$GCAL_PLAINTEXT" >"$TEMP"
 
   if [ -n "$CUTPATTERN" ]; then
     sed -n '1,/please-cut-here/p' "$TEMP" | head -n -1
@@ -147,4 +301,4 @@ IMAGE="$( html_screenshot "file://$TEMPFILE.html" plan.png )" && \
 convert "$IMAGE" -type GrayScale -depth 8 -colors 256 -resize '800x600!' -rotate 90 "$TEMPFILE.png"
 scp -O "$TEMPFILE.png" "$WEBSERVER_UPLOAD"
 
-rm -f "$TEMPFILE" "$TEMPFILE.html" "$TEMPFILE.png" "$IMAGE" "$GCAL_PLAINTTEXT" "$TEMP"
+rm -f "$TEMPFILE" "$TEMPFILE.html" "$TEMPFILE.png" "$IMAGE" "$GCAL_PLAINTEXT" "$TEMP"

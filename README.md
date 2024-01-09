@@ -48,7 +48,7 @@ user@box:~$ crontab -l | grep gcal-to-image
 * https://github.com/koreader/koreader/blob/master/platform/kindle/koreader.sh
 * https://www.sixfoisneuf.fr/posts/kindle-hacking-deeper-dive-internals/
 * https://en.wikipedia.org/wiki/Nook_Simple_Touch
-* https://ben.page/eink
+* https://news.ycombinator.com/item?id=38928277
 * https://en.wikipedia.org/wiki/Comparison_of_e-readers
 
 ### ToDo

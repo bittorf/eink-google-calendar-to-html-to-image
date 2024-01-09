@@ -4,7 +4,7 @@
 # e.g.: ssh-copy-id root@10.63.44.33
 WEBSERVER_UPLOAD='root@10.63.44.33:/www/eink-image.png'
 MAX_LINES=10
-
+set -x
 command -v 'faketime' >/dev/null || {
 	echo "[ERROR] please install 'faketime'"
 	exit 1
@@ -36,71 +36,69 @@ query()		# show even todays appointments using faketime:
 NBS='&nbsp;'
 TEMP="$( mktemp )" || exit 1
 GCAL_PLAINTTEXT="$( mktemp )" || exit 1
-query | tr -d '\r' >"$GCAL_PLAINTTEXT"
+query | tr -d '\r' >"$GCAL_PLAINTTEXT"	# FIXME: can be stuck at: "Enter verification code: ..."
 
 emit_html()
 {
-echo "<!DOCTYPE html><html lang=en><head><title>gcalcli-html-export</title>"
-echo "<meta charset='UTF-8'>"
-echo "<style>"
-echo ".table th {"
-echo "  background-color: #fff;"
-echo "  font-size: 6pt;"
-echo "}"
-echo "</style>"
-echo "</head><body bgcolor=white>"
-echo "<table cellspacing=1 cellpadding=1 width=100% border=1 height=100%>"
-echo " <tr>"
-echo "  <th align=center width=1%>Day</th>"
-echo "  <th align=center width=1%>Time</th>"
-echo "  <th align=left width=98%>${NBS}${NBS}Mission</th>"
-echo " </tr>"
+  echo "<!DOCTYPE html><html lang=en><head><title>gcalcli-html-export</title>"
+  echo "<meta charset='UTF-8'>"
+  echo "<style>"
+  echo ".table th {"
+  echo "  background-color: #fff;"
+  echo "  font-size: 6pt;"
+  echo "}"
+  echo "</style>"
+  echo "</head><body bgcolor=white>"
+  echo "<table cellspacing=1 cellpadding=1 width=100% border=1 height=100%>"
+  echo " <tr>"
+  echo "  <th align=center width=1%>Day</th>"
+  echo "  <th align=center width=1%>Time</th>"
+  echo "  <th align=left width=98%>${NBS}${NBS}Mission</th>"
+  echo " </tr>"
 
-CUTPATTERN=
-I=0
-J=0
-while IFS= read -r LINE; do {
-  I=$(( I + 1 ))
+  CUTPATTERN=
+  I=0
+  J=0
+  while IFS= read -r LINE; do {
+    I=$(( I + 1 ))
 
-echo "$LINE" >>/tmp/2
+    case "$LINE" in
+      ''|*'Kalenderwoche'*20[0-9][0-9]|*Feiertag*)
+        I=$(( I - 1 ))
+      ;;
+      "Fri "*|"Sat "*|"Sun "*|"Thu "*|"Tue "*|"Wed "*|"Mon "*)
+        J=$(( J + 1 ))
+        test $I -ge $MAX_LINES && test -z "$CUTPATTERN" && CUTPATTERN='please-cut-here'
 
-  case "$LINE" in
-    ''|*'Kalenderwoche'*20[0-9][0-9]|*Feiertag*)
-      I=$(( I - 1 ))
-    ;;
-    "Fri "*|"Sat "*|"Sun "*|"Thu "*|"Tue "*|"Wed "*|"Mon "*)
-      J=$(( J + 1 ))
-      test $I -ge $MAX_LINES && test -z "$CUTPATTERN" && CUTPATTERN='please-cut-here'
+        # shellcheck disable=SC2086
+        MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
+        # shellcheck disable=SC2086
+        TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
+        DAY="$(     echo "$LINE" | cut -b1-10 )"
 
-      # shellcheck disable=SC2086
-      MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
-      # shellcheck disable=SC2086
-      TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
-      DAY="$(     echo "$LINE" | cut -b1-10 )"
+        test "$( LC_ALL=C date '+%a %b %d' )" = "$DAY" && DAY="<b>$DAY</b>"
 
-      test "$( LC_ALL=C date '+%a %b %d' )" = "$DAY" && DAY="<b>$DAY</b>"
+        echo " <tr><!-- startofentry $J | line: $I | $CUTPATTERN -->"
+        echo "  <td nowrap><tt>$DAY</tt></td>"
+        echo "  <td align=right valign=top nowrap><tt>$TIME</tt></td>"
+        echo "  <td>${NBS}${NBS}$MISSION</td>"
+        echo " </tr>"
+      ;;
+      *)
+        # shellcheck disable=SC2086
+        MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
+        # shellcheck disable=SC2086
+        TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
+        DAY="$NBS"
 
-      echo " <tr><!-- startofentry $J | line: $I | $CUTPATTERN -->"
-      echo "  <td nowrap><tt>$DAY</tt></td>"
-      echo "  <td align=right valign=top nowrap><tt>$TIME</tt></td>"
-      echo "  <td>${NBS}${NBS}$MISSION</td>"
-      echo " </tr>"
-    ;;
-    *)
-      # shellcheck disable=SC2086
-      MISSION="$( echo "$LINE" | cut -b20-999 )" && set -- $MISSION && MISSION=$*
-      # shellcheck disable=SC2086
-      TIME="$(    echo "$LINE" | cut -b13-17 )" && set -- $TIME && TIME=$* && TIME="${TIME:-${NBS}}"
-      DAY="$NBS"
-
-      echo " <tr><!-- line: $I -->"
-      echo "  <td nowrap>$DAY</td>"
-      echo "  <td align=right valign=top nowrap><tt>$TIME</tt></td>"
-      echo "  <td>${NBS}${NBS}$MISSION</td>"
-      echo " </tr>"
-    ;;
-  esac
-} done <"$GCAL_PLAINTTEXT" >"$TEMP"
+        echo " <tr><!-- line: $I -->"
+        echo "  <td nowrap>$DAY</td>"
+        echo "  <td align=right valign=top nowrap><tt>$TIME</tt></td>"
+        echo "  <td>${NBS}${NBS}$MISSION</td>"
+        echo " </tr>"
+      ;;
+    esac
+  } done <"$GCAL_PLAINTTEXT" >"$TEMP"
 
   if [ -n "$CUTPATTERN" ]; then
     sed -n '1,/please-cut-here/p' "$TEMP" | head -n -1

@@ -52,9 +52,10 @@ user@box:~$ crontab -l | grep gcal-to-image
 * https://en.wikipedia.org/wiki/Comparison_of_e-readers
 
 ### ToDo
+* fallback to errorpage, if image-download fails
 * make HTML more w3c validator safe (CSS)
 * keep font aspect ratio (e.g. always output 12? lines)
-* document special stuff (e.g. upload scp-command, download URL
+* document special stuff (e.g. upload scp-command, download URL)
 * make sleepmode and RTC-wakeup working: https://www.mobileread.com/forums/showthread.php?p=4246644
 * measure power drain in sleepmode
 * calc estimated time till 20% power (start loading then) or just charge monthly?
